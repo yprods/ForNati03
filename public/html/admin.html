@@ -19,7 +19,9 @@
             <h3>הוספת משתמש</h3>
             <form id="addUserForm">
                 <input type="text" id="newUsername" placeholder="שם משתמש" required>
-                <input type="password" id="newPassword" placeholder="סיסמה" required>
+                <input type="password" id="newPassword" placeholder="סיסמה (מינימום 4 תווים)" required>
+                <input type="tel" id="newPhone" placeholder="טלפון (אופציונלי)">
+                <input type="email" id="newEmail" placeholder="אימייל (אופציונלי)">
                 <select id="newRole" required>
                     <option value="" disabled selected>בחר תפקיד</option>
                     <option value="user">נציג</option>
@@ -27,15 +29,19 @@
                     <option value="lawyer">עורך דין</option>
                     <option value="admin">מנהל מערכת</option>
                 </select>
-                <button type="submit">הוסף</button>
+                <div id="addUserError" style="display:none; margin-top:10px;"></div>
+                <div id="addUserSuccess" style="display:none; margin-top:10px;"></div>
+                <button type="submit">הוסף משתמש</button>
             </form>
         </div>
         <div class="card">
             <h3>העלאת פרויקט</h3>
-            <form action="/upload" method="POST" enctype="multipart/form-data">
-                <input type="text" name="project" placeholder="שם הפרויקט" required>
-                <input type="file" name="file" required>
-                <button type="submit">העלה</button>
+            <form id="uploadForm">
+                <input type="text" id="projectName" placeholder="שם הפרויקט" required>
+                <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" required>
+                <div id="uploadError" style="display:none; margin-top:10px;"></div>
+                <div id="uploadSuccess" style="display:none; margin-top:10px;"></div>
+                <button type="button" id="uploadBtn" onclick="uploadExcelFile()">העלה אקסל</button>
             </form>
         </div>
     </div>

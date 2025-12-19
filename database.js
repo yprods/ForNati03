@@ -14,7 +14,9 @@ projectsDb.run("PRAGMA foreign_keys = ON");
 function addColumnIfNotExists(db, table, column, type) {
     db.run(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`, (err) => {
         // אם יש שגיאה (למשל העמודה כבר קיימת), אנחנו מתעלמים ממנה וממשיכים
-        if (!err) {
+        if (err && !err.message.includes('duplicate column name')) {
+            console.error(`Migration warning: Could not add column '${column}' to '${table}':`, err.message);
+        } else if (!err) {
             console.log(`Auto-Migration: Added column '${column}' to table '${table}'`);
         }
     });
@@ -34,8 +36,8 @@ usersDb.serialize(() => {
         must_change_password BOOLEAN DEFAULT 0
     )`, (err) => {
         if (!err) {
-            // יצירת אדמין ברירת מחדל
-            usersDb.run(`INSERT OR IGNORE INTO users (id, username, password, role, is_approved) VALUES (1, 'admin', 'admin', 'admin', 1)`);
+            // יצירת אדמין ברירת מחדל (הסיסמה תהיה מוצפנת על ידי create_admin.js)
+            // לא יוצרים כאן כי צריך bcrypt - create_admin.js מטפל בזה
         }
     });
 
@@ -47,6 +49,8 @@ usersDb.serialize(() => {
     )`);
 
     // --- תיקון אוטומטי לטבלת משתמשים (מוסיף עמודות חסרות) ---
+    addColumnIfNotExists(usersDb, 'users', 'phone', 'TEXT');
+    addColumnIfNotExists(usersDb, 'users', 'email', 'TEXT');
     addColumnIfNotExists(usersDb, 'users', 'is_approved', 'BOOLEAN DEFAULT 0');
     addColumnIfNotExists(usersDb, 'users', 'must_change_password', 'BOOLEAN DEFAULT 0');
 });
@@ -128,9 +132,15 @@ projectsDb.serialize(() => {
         resident_id INTEGER, 
         message TEXT, 
         sender TEXT, -- 'bot' or 'resident'
+        direction TEXT, -- 'incoming' or 'outgoing'
+        sender_name TEXT,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(resident_id) REFERENCES residents(id) ON DELETE CASCADE
     )`);
+    
+    // הוספת עמודות חסרות לטבלת הודעות
+    addColumnIfNotExists(projectsDb, 'chat_messages', 'direction', 'TEXT');
+    addColumnIfNotExists(projectsDb, 'chat_messages', 'sender_name', 'TEXT');
 
     // 4. טבלה למשימות (לשימוש כללי, היומן משתמש ב-meetings)
     projectsDb.run(`CREATE TABLE IF NOT EXISTS tasks (

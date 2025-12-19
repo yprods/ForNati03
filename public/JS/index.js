@@ -1,19 +1,35 @@
+// --- הצגת הודעות שגיאה/הצלחה ---
+function showAlert(message, type = 'error') {
+    const container = document.getElementById('alertContainer');
+    if (!container) return;
+    container.innerHTML = `<div class="alert ${type}" style="display: block;">${message}</div>`;
+    setTimeout(() => {
+        if (container) container.innerHTML = '';
+    }, 5000);
+}
+
 // --- ניהול מודאלים ---
 function openModal(id) {
     const modal = document.getElementById(id);
-    if (modal) modal.style.display = 'flex';
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
 }
 
 function closeModal(id) {
     const modal = document.getElementById(id);
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
 }
 
 window.onclick = function(event) {
-    if (event.target.className === 'modal-overlay') {
+    if (event.target.classList.contains('modal-overlay')) {
         // מונעים סגירה של חלון החלפת סיסמה בלחיצה בחוץ (הוא חובה)
         if (event.target.id !== 'changePasswordModal') {
-            event.target.style.display = "none";
+            closeModal(event.target.id);
         }
     }
 }
@@ -57,13 +73,13 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
         } else {
             const text = await res.text();
-            alert(text);
+            showAlert(text, 'error');
             btn.innerText = originalText;
             btn.disabled = false;
         }
     } catch (err) {
         console.error(err);
-        alert('שגיאת תקשורת עם השרת');
+        showAlert('שגיאת תקשורת עם השרת. אנא נסה שוב.', 'error');
         btn.innerText = originalText;
         btn.disabled = false;
     }
@@ -91,11 +107,14 @@ document.getElementById('changePasswordForm').addEventListener('submit', async (
 
         if (res.ok) {
             const data = await res.json();
-            alert('הסיסמה שונתה בהצלחה! מתחבר...');
-            localStorage.setItem('user', JSON.stringify(data.user));
-            redirectToPage(data.user.role, data.user.id);
+            showAlert('הסיסמה שונתה בהצלחה! מתחבר...', 'success');
+            setTimeout(() => {
+                localStorage.setItem('user', JSON.stringify(data.user));
+                redirectToPage(data.user.role, data.user.id);
+            }, 1000);
         } else {
-            alert('שגיאה בשינוי הסיסמה');
+            const text = await res.text();
+            showAlert(text || 'שגיאה בשינוי הסיסמה', 'error');
         }
     } catch (err) {
         alert('תקלה בתקשורת');
@@ -122,14 +141,14 @@ document.getElementById('forgotForm').addEventListener('submit', async (e) => {
 
         if (res.ok) {
             if (data.method === 'whatsapp') {
-                alert('📱 סיסמה זמנית נשלחה אליך לווטסאפ!');
+                showAlert('📱 סיסמה זמנית נשלחה אליך לווטסאפ!', 'success');
             } else {
-                alert('📧 סיסמה זמנית נשלחה אליך למייל!');
+                showAlert('📧 סיסמה זמנית נשלחה אליך למייל!', 'success');
             }
             closeModal('forgotModal');
             document.getElementById('forgotForm').reset();
         } else {
-            alert(data.error || 'שגיאה בשחזור הסיסמה');
+            showAlert(data.error || 'שגיאה בשחזור הסיסמה', 'error');
         }
     } catch (err) {
         alert('תקלה בתקשורת');
@@ -159,15 +178,17 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
 
         if (res.ok) {
             const data = await res.json();
-            alert(data.message);
-            closeModal('registerModal');
-            document.getElementById('registerForm').reset();
+            showAlert(data.message, 'success');
+            setTimeout(() => {
+                closeModal('registerModal');
+                document.getElementById('registerForm').reset();
+            }, 2000);
         } else {
             const text = await res.text();
-            alert('שגיאה: ' + text);
+            showAlert('שגיאה: ' + text, 'error');
         }
     } catch (err) {
-        alert('תקלה בהרשמה');
+        showAlert('תקלה בהרשמה. אנא נסה שוב.', 'error');
     } finally {
         btn.disabled = false;
     }

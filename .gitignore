@@ -1,0 +1,13 @@
+node_modules
+.env
+*.db
+*.sqlite
+uploads/*
+!uploads/.gitkeep
+backups/*
+dist/
+build/
+*.log
+.DS_Store
+fix_database.js
+

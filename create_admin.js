@@ -31,7 +31,9 @@ async function createAdmin() {
 
         db.run(sql, [username, hashedPassword, role, phone, email], function(err) {
             if (err) {
-                return console.error("שגיאה ביצירת משתמש:", err.message);
+                console.error("שגיאה ביצירת משתמש:", err.message);
+                db.close();
+                return;
             }
             console.log(`
             ------------------------------------------
@@ -42,10 +44,12 @@ async function createAdmin() {
             תפקיד:    ${role} (מנהל מערכת)
             ------------------------------------------
             `);
+            db.close();
         });
 
     } catch (error) {
         console.error("System Error:", error);
+        db.close();
     }
 }
 

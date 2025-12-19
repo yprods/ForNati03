@@ -7,31 +7,128 @@ document.addEventListener('DOMContentLoaded', () => {
     // הוספת משתמש חדש - מתוקן עם טלפון ומייל
     document.getElementById('addUserForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const username = document.getElementById('newUsername').value;
+        const username = document.getElementById('newUsername').value.trim();
         const password = document.getElementById('newPassword').value;
         const role = document.getElementById('newRole').value;
+        const phone = document.getElementById('newPhone') ? document.getElementById('newPhone').value.trim() : '';
+        const email = document.getElementById('newEmail') ? document.getElementById('newEmail').value.trim() : '';
+        
+        const errorMsg = document.getElementById('addUserError');
+        const successMsg = document.getElementById('addUserSuccess');
+        
+        // איפוס הודעות קודמות
+        if (errorMsg) errorMsg.style.display = 'none';
+        if (successMsg) successMsg.style.display = 'none';
+        
+        // בדיקות צד לקוח
+        if (!username) {
+            showUserError('אנא הזן שם משתמש');
+            return;
+        }
+        
+        if (!password || password.length < 4) {
+            showUserError('הסיסמה חייבת להכיל לפחות 4 תווים');
+            return;
+        }
+        
+        if (!role) {
+            showUserError('אנא בחר תפקיד למשתמש');
+            return;
+        }
 
-        // הוספת קליטת שדות הטלפון והמייל
-        const phone = document.getElementById('newPhone').value;
-        const email = document.getElementById('newEmail').value;
+        const btn = e.target.querySelector('button[type="submit"]');
+        const originalText = btn ? btn.innerText : 'הוסף משתמש';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerText = 'מוסיף...';
+        }
 
         try {
+            const payload = {
+                username: username,
+                password: password,
+                role: role,
+                phone: phone || '',
+                email: email || ''
+            };
+            
+            console.log('Sending add-user request:', { ...payload, password: '***' });
+            
             const res = await fetch('/add-user', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                // שליחת כל הנתונים לשרת
-                body: JSON.stringify({username, password, role, phone, email})
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
             });
 
-            if(res.ok) {
-                alert('המשתמש נוסף בהצלחה!');
+            console.log('Response status:', res.status, res.statusText);
+
+            let data;
+            try {
+                const text = await res.text();
+                console.log('Response text:', text);
+                data = JSON.parse(text);
+            } catch (parseError) {
+                console.error('Failed to parse response:', parseError);
+                data = { error: 'שגיאה בפענוח תשובת השרת' };
+            }
+
+            if(res.ok && data.success) {
+                showUserSuccess(data.message || 'המשתמש נוסף בהצלחה!');
                 loadUsers();
                 document.getElementById('addUserForm').reset();
             } else {
-                alert('שגיאה בהוספת משתמש');
+                const errorMsg = data.error || `שגיאה בהוספת משתמש (קוד: ${res.status})`;
+                console.error('Add user failed:', errorMsg);
+                showUserError(errorMsg);
             }
-        } catch(e) { alert('תקלה בתקשורת'); }
+        } catch(e) {
+            console.error('Add user network error:', e);
+            showUserError('תקלה בתקשורת עם השרת. אנא נסה שוב.');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
     });
+    
+    function showUserError(message) {
+        const errorEl = document.getElementById('addUserError');
+        if (errorEl) {
+            errorEl.textContent = '❌ ' + message;
+            errorEl.style.display = 'block';
+            errorEl.style.color = '#991b1b';
+            errorEl.style.background = '#fee2e2';
+            errorEl.style.padding = '12px';
+            errorEl.style.borderRadius = '8px';
+            errorEl.style.marginTop = '10px';
+            errorEl.style.border = '1px solid #fecaca';
+        } else {
+            alert('שגיאה: ' + message);
+        }
+    }
+    
+    function showUserSuccess(message) {
+        const successEl = document.getElementById('addUserSuccess');
+        if (successEl) {
+            successEl.textContent = '✅ ' + message;
+            successEl.style.display = 'block';
+            successEl.style.color = '#065f46';
+            successEl.style.background = '#d1fae5';
+            successEl.style.padding = '12px';
+            successEl.style.borderRadius = '8px';
+            successEl.style.marginTop = '10px';
+            successEl.style.border = '1px solid #a7f3d0';
+            setTimeout(() => {
+                successEl.style.display = 'none';
+            }, 5000);
+        } else {
+            alert(message);
+        }
+    }
 });
 
 // שלבי הפרויקט
@@ -56,11 +153,36 @@ function generateStatusSelect(currentStatus) {
 // --- העלאת אקסל מהירה (AJAX) ---
 async function uploadExcelFile() {
     const fileInput = document.getElementById('excelFile');
-    const projectName = document.getElementById('projectName').value;
+    const projectName = document.getElementById('projectName').value.trim();
     const btn = document.getElementById('uploadBtn');
+    const errorMsg = document.getElementById('uploadError');
+    const successMsg = document.getElementById('uploadSuccess');
 
-    if (!fileInput.files.length || !projectName) {
-        alert('נא לבחור קובץ ולרשום שם פרויקט');
+    // איפוס הודעות קודמות
+    if (errorMsg) errorMsg.style.display = 'none';
+    if (successMsg) successMsg.style.display = 'none';
+
+    // בדיקות צד לקוח
+    if (!fileInput || !fileInput.files.length) {
+        showUploadError('אנא בחר קובץ אקסל להעלאה');
+        return;
+    }
+
+    if (!projectName) {
+        showUploadError('אנא הזן שם פרויקט');
+        return;
+    }
+
+    // בדיקת סוג קובץ
+    const fileName = fileInput.files[0].name.toLowerCase();
+    if (!fileName.endsWith('.xlsx') && !fileName.endsWith('.xls') && !fileName.endsWith('.csv')) {
+        showUploadError('סוג קובץ לא נתמך. אנא העלה קובץ אקסל (.xlsx, .xls) או CSV');
+        return;
+    }
+
+    // בדיקת גודל קובץ (50MB)
+    if (fileInput.files[0].size > 50 * 1024 * 1024) {
+        showUploadError('הקובץ גדול מדי. מקסימום 50MB');
         return;
     }
 
@@ -68,26 +190,72 @@ async function uploadExcelFile() {
     formData.append('file', fileInput.files[0]);
     formData.append('project', projectName);
 
-    btn.disabled = true;
-    btn.innerText = '⏳ מעלה נתונים...';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = '⏳ מעלה נתונים...';
+    }
 
     try {
         const res = await fetch('/upload', { method: 'POST', body: formData });
-        const text = await res.text();
+        let data;
+        try {
+            data = await res.json();
+        } catch {
+            const text = await res.text().catch(() => 'שגיאה לא ידועה');
+            data = { error: text };
+        }
 
-        if (res.ok) {
-            showSuccessModal(text);
+        if (res.ok && data.success) {
+            showUploadSuccess(data.message || 'הקובץ הועלה בהצלחה!');
             loadProjectStats();
             document.getElementById('projectName').value = '';
             fileInput.value = '';
         } else {
-            alert('שגיאה בהעלאה: ' + text);
+            showUploadError(data.error || 'שגיאה בהעלאה. אנא נסה שוב.');
         }
     } catch (e) {
-        alert('תקלה בתקשורת עם השרת');
+        console.error('Upload error:', e);
+        showUploadError('תקלה בתקשורת עם השרת. אנא נסה שוב.');
     } finally {
-        btn.disabled = false;
-        btn.innerText = 'העלה אקסל';
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = 'העלה אקסל';
+        }
+    }
+}
+
+function showUploadError(message) {
+    const errorEl = document.getElementById('uploadError');
+    if (errorEl) {
+        errorEl.textContent = '❌ ' + message;
+        errorEl.style.display = 'block';
+        errorEl.style.color = '#991b1b';
+        errorEl.style.background = '#fee2e2';
+        errorEl.style.padding = '12px';
+        errorEl.style.borderRadius = '8px';
+        errorEl.style.marginTop = '10px';
+        errorEl.style.border = '1px solid #fecaca';
+    } else {
+        alert('שגיאה: ' + message);
+    }
+}
+
+function showUploadSuccess(message) {
+    const successEl = document.getElementById('uploadSuccess');
+    if (successEl) {
+        successEl.textContent = '✅ ' + message;
+        successEl.style.display = 'block';
+        successEl.style.color = '#065f46';
+        successEl.style.background = '#d1fae5';
+        successEl.style.padding = '12px';
+        successEl.style.borderRadius = '8px';
+        successEl.style.marginTop = '10px';
+        successEl.style.border = '1px solid #a7f3d0';
+        setTimeout(() => {
+            successEl.style.display = 'none';
+        }, 10000);
+    } else {
+        showSuccessModal(message);
     }
 }
 

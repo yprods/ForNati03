@@ -3,93 +3,487 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>כניסה למערכת | LionGroup</title>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <title>כניסה למערכת | LionGroup CRM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body.login-page-body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 600px;
+        }
+
+        .login-brand-side {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-brand-side::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 15s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .brand-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-logo::before {
+            content: '🦁';
+            font-size: 3rem;
+        }
+
+        .brand-headline {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 20px;
+        }
+
+        .brand-subtext {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .brand-footer {
+            position: relative;
+            z-index: 1;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: auto;
+        }
+
+        .login-form-side {
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-header {
+            margin-bottom: 40px;
+        }
+
+        .login-header h2 {
+            font-size: 2rem;
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .login-header p {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .login-form {
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+            background: #f8fafc;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .login-links button {
+            background: none;
+            border: none;
+            color: #2563eb;
+            cursor: pointer;
+            font-size: 0.95rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .login-links button:hover {
+            background: #eff6ff;
+            color: #1e40af;
+        }
+
+        .separator {
+            color: #cbd5e1;
+        }
+
+        /* מודאלים */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-box h3 {
+            font-size: 1.8rem;
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .modal-box p {
+            color: #64748b;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #f1f5f9;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .form-actions button {
+            flex: 1;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .alert.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .alert.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        /* רספונסיביות */
+        @media (max-width: 768px) {
+            .login-container {
+                grid-template-columns: 1fr;
+                max-width: 100%;
+            }
+
+            .login-brand-side {
+                padding: 40px 30px;
+                min-height: 200px;
+            }
+
+            .brand-headline {
+                font-size: 1.5rem;
+            }
+
+            .login-form-side {
+                padding: 40px 30px;
+            }
+
+            .login-header h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
-<body class="login-page-body"> <div class="login-split-container">
-    <div class="login-brand-side">
-        <div class="brand-content">
-            <h1 class="brand-headline">ניהול נכסים ודיירים <br>ברמה אחרת.</h1>
-            <p class="brand-subtext">מערכת ה-CRM המתקדמת לניהול חוזים, קשרי דיירים ותפעול שוטף.</p>
+<body class="login-page-body">
+    <div class="login-container">
+        <div class="login-brand-side">
+            <div class="brand-content">
+                <div class="brand-logo">LionGroup</div>
+                <h1 class="brand-headline">ניהול נכסים ודיירים<br>ברמה אחרת</h1>
+                <p class="brand-subtext">מערכת CRM מתקדמת לניהול חוזים, קשרי דיירים ותפעול שוטף. כל מה שצריך במקום אחד.</p>
+            </div>
+            <div class="brand-footer">
+                &copy; 2024 LionGroup LTD. כל הזכויות שמורות.
+            </div>
         </div>
-        <div class="brand-footer">
-            &copy; 2023 LionGroup LTD. כל הזכויות שמורות.
-        </div>
-    </div>
 
-    <div class="login-form-side">
-        <div class="login-box-enhanced">
-            <h2 style="margin-bottom: 10px; font-size: 2rem;">ברוכים הבאים</h2>
-            <p style="color:var(--text-muted); margin-bottom: 40px; font-size: 1.1rem;">אנא הזן את פרטיך לכניסה למערכת</p>
+        <div class="login-form-side">
+            <div class="login-header">
+                <h2>ברוכים הבאים</h2>
+                <p>אנא הזן את פרטיך לכניסה למערכת</p>
+            </div>
 
-            <form id="loginForm">
-                <div class="form-group floating-label">
-                    <input type="text" id="username" required placeholder=" ">
+            <div id="alertContainer"></div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
                     <label for="username">שם משתמש</label>
+                    <input type="text" id="username" required autocomplete="username" placeholder="הזן שם משתמש">
                 </div>
-                <div class="form-group floating-label" style="margin-bottom: 30px;">
-                    <input type="password" id="password" required placeholder=" ">
+                <div class="form-group">
                     <label for="password">סיסמה</label>
+                    <input type="password" id="password" required autocomplete="current-password" placeholder="הזן סיסמה">
                 </div>
 
-                <button type="submit" style="width:100%; padding: 16px; font-size: 1.1rem;">התחבר למערכת</button>
+                <button type="submit" class="login-btn" id="loginBtn">התחבר למערכת</button>
             </form>
 
             <div class="login-links">
-                <button onclick="document.getElementById('registerModal').style.display='flex'">יצירת חשבון חדש</button>
+                <button onclick="openModal('registerModal')">יצירת חשבון חדש</button>
                 <span class="separator">•</span>
-                <button onclick="document.getElementById('forgotModal').style.display='flex'">שכחתי סיסמה</button>
+                <button onclick="openModal('forgotModal')">שכחתי סיסמה</button>
             </div>
         </div>
     </div>
-</div>
 
-<div id="registerModal" class="modal-overlay">
-    <div class="modal-box">
-        <div style="text-align:center; margin-bottom:20px;">
-            <h3 style="margin:0;">הרשמה למערכת</h3>
-            <small style="color:var(--text-muted);">מלא את הפרטים ליצירת משתמש חדש</small>
+    <!-- מודאל הרשמה -->
+    <div id="registerModal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('registerModal')">×</button>
+            <h3>הרשמה למערכת</h3>
+            <p>מלא את הפרטים ליצירת משתמש חדש. המשתמש יאושר על ידי מנהל המערכת.</p>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>שם משתמש</label>
+                    <input type="text" id="regUser" required>
+                </div>
+                <div class="form-group">
+                    <label>סיסמה</label>
+                    <input type="password" id="regPass" required>
+                </div>
+                <div class="form-group">
+                    <label>טלפון נייד</label>
+                    <input type="tel" id="regPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>אימייל</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="login-btn">הירשם</button>
+                    <button type="button" onclick="closeModal('registerModal')" class="btn-secondary">ביטול</button>
+                </div>
+            </form>
         </div>
-        <form id="registerForm">
-            <div class="form-group"><label>שם משתמש</label><input type="text" id="regUser" required></div>
-            <div class="form-group"><label>סיסמה</label><input type="password" id="regPass" required></div>
-            <div class="form-group"><label>טלפון נייד</label><input type="text" id="regPhone" required></div>
-            <div class="form-group"><label>אימייל</label><input type="email" id="regEmail" required></div>
-            <div style="display:flex; gap:15px; margin-top:25px;">
-                <button type="submit" style="flex:1;">הירשם</button>
-                <button type="button" onclick="document.getElementById('registerModal').style.display='none'" class="btn-edit" style="flex:1;">ביטול</button>
-            </div>
-        </form>
     </div>
-</div>
 
-<div id="forgotModal" class="modal-overlay">
-    <div class="modal-box">
-        <h3 style="margin-bottom:10px;">שחזור סיסמה</h3>
-        <p style="color:var(--text-muted); margin-bottom:20px;">הכנס את המייל או הטלפון שלך לקבלת סיסמה זמנית.</p>
-        <form id="forgotForm">
-            <div class="form-group"><input type="text" id="forgotIdentifier" placeholder="מייל או טלפון" required></div>
-            <div style="display:flex; gap:15px; margin-top:20px;">
-                <button type="submit" style="flex:1;">שלח סיסמה</button>
-                <button type="button" onclick="document.getElementById('forgotModal').style.display='none'" class="btn-edit" style="flex:1;">ביטול</button>
-            </div>
-        </form>
+    <!-- מודאל שכחתי סיסמה -->
+    <div id="forgotModal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('forgotModal')">×</button>
+            <h3>שחזור סיסמה</h3>
+            <p>הכנס את המייל או הטלפון שלך לקבלת סיסמה זמנית.</p>
+            <form id="forgotForm">
+                <div class="form-group">
+                    <label>מייל או טלפון</label>
+                    <input type="text" id="forgotIdentifier" placeholder="מייל או מספר טלפון" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="login-btn">שלח סיסמה</button>
+                    <button type="button" onclick="closeModal('forgotModal')" class="btn-secondary">ביטול</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<div id="changePasswordModal" class="modal-overlay">
-    <div class="modal-box" style="border-top-color:var(--warning);">
-        <h3 style="color:var(--warning); margin-bottom:10px;">🔒 נדרשת החלפת סיסמה</h3>
-        <p style="margin-bottom:20px;">התחברת עם סיסמה זמנית. אנא בחר סיסמה חדשה.</p>
-        <form id="changePasswordForm">
-            <input type="hidden" id="changePassUserId">
-            <div class="form-group"><label>סיסמה חדשה</label><input type="password" id="newPermanentPass" required></div>
-            <button type="submit" style="width:100%; margin-top:10px;">שמור והמשך</button>
-        </form>
+    <!-- מודאל החלפת סיסמה -->
+    <div id="changePasswordModal" class="modal-overlay">
+        <div class="modal-box" style="border-top: 4px solid #f59e0b;">
+            <h3 style="color: #f59e0b;">🔒 נדרשת החלפת סיסמה</h3>
+            <p>התחברת עם סיסמה זמנית. אנא בחר סיסמה חדשה ומאובטחת.</p>
+            <form id="changePasswordForm">
+                <input type="hidden" id="changePassUserId">
+                <div class="form-group">
+                    <label>סיסמה חדשה</label>
+                    <input type="password" id="newPermanentPass" required placeholder="הזן סיסמה חדשה">
+                </div>
+                <button type="submit" class="login-btn" style="width: 100%; margin-top: 10px;">שמור והמשך</button>
+            </form>
+        </div>
     </div>
-</div>
 
-<script src="../JS/index.js"></script>
+    <script src="../JS/index.js"></script>
 </body>
 </html>
