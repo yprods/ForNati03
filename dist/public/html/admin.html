@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>מנהל מערכת</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+</head>
+<body>
+<div style="max-width: 1200px; margin: 0 auto;">
+    <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h1>פאנל ניהול</h1>
+        <button onclick="window.location.href='/html/index.html'" style="background:#ef4444; width:auto;">יציאה</button>
+    </header>
+
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
+        <div class="card">
+            <h3>הוספת משתמש</h3>
+            <form id="addUserForm">
+                <input type="text" id="newUsername" placeholder="שם משתמש" required>
+                <input type="password" id="newPassword" placeholder="סיסמה" required>
+                <select id="newRole" required>
+                    <option value="" disabled selected>בחר תפקיד</option>
+                    <option value="user">נציג</option>
+                    <option value="manager">מנהל מתחם</option>
+                    <option value="lawyer">עורך דין</option>
+                    <option value="admin">מנהל מערכת</option>
+                </select>
+                <button type="submit">הוסף</button>
+            </form>
+        </div>
+        <div class="card">
+            <h3>העלאת פרויקט</h3>
+            <form action="/upload" method="POST" enctype="multipart/form-data">
+                <input type="text" name="project" placeholder="שם הפרויקט" required>
+                <input type="file" name="file" required>
+                <button type="submit">העלה</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card"><h3>סטטוס פרויקטים</h3><div id="projectStats"></div></div>
+    <div class="card"><h3>רשימת משתמשים</h3><div id="userList"></div></div>
+
+    <div id="detailsModal" style="display:none; position:fixed; top:5%; left:5%; width:90%; height:90%; background:white; padding:20px; box-shadow:0 0 20px rgba(0,0,0,0.5); overflow-y:auto; border-radius:10px; z-index:1000;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+            <h3 id="modalTitle">פרטים</h3>
+            <button onclick="document.getElementById('detailsModal').style.display='none'" style="background:#ccc;">סגור</button>
+        </div>
+        <div id="modalContent"></div>
+    </div>
+</div>
+<script src="../JS/admin.js"></script>
+</body>
+</html>

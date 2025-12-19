@@ -1,0 +1,33 @@
+{
+  "name": "pinuibinuiproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "start:prod": "cross-env NODE_ENV=production node server.js",
+    "build": "node build.js",
+    "build:clean": "node build.js --clean",
+    "prebuild": "npm run build:clean || true"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.1",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "express-session": "^1.18.1",
+    "helmet": "^8.1.0",
+    "multer": "^2.0.2",
+    "node-cron": "^4.2.1",
+    "pdf-parse": "^2.4.5",
+    "sqlite3": "^5.1.7",
+    "xlsx": "^0.18.5"
+  }
+}

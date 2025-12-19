@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת נציג | LionGroup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <h2>שלום נציג</h2>
+        <small style="color:var(--text-muted);">ניהול דיירים ופגישות</small>
+    </div>
+    <button onclick="location.href='/html/index.html'" class="btn-logout">יציאה</button>
+</div>
+
+<div class="toolbar">
+    <button onclick="searchResidents()">🔍 חפש דייר</button>
+    <button onclick="openUserCalendar()" class="btn-calendar">📅 יומן משימות</button>
+</div>
+
+<div id="navBar" class="nav-bar" style="display:none;">
+    <button id="backBtn" class="btn-back">➜ חזור לרשימה</button>
+    <h3 id="navTitle"></h3>
+</div>
+
+<div id="complexHeader" class="complex-info-card" style="display:none;">
+    <h3 class="card-title">פרטי המתחם</h3>
+    <div class="info-grid">
+        <div class="info-item">
+            <span class="icon">⚖️</span>
+            <div>
+                <small>עורך דין מלווה</small>
+                <strong id="infoLawyer">-</strong>
+            </div>
+        </div>
+        <div class="info-item">
+            <span class="icon">📅</span>
+            <div>
+                <small>כנס דיירים הבא</small>
+                <strong id="infoConference">-</strong>
+            </div>
+        </div>
+        <div class="info-item">
+            <span class="icon">📂</span>
+            <div>
+                <small>פרוטוקול אחרון</small>
+                <span id="infoProtocol">-</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="mainContent" class="client-card-grid">
+    <div style="grid-column: 1/-1; text-align:center; margin-top:50px;">
+        <p>טוען נתונים...</p>
+    </div>
+</div>
+
+<div id="editModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 class="modal-title">כרטיס דייר</h3>
+
+        <div id="lockedMsg" class="locked-msg" style="display:none;">
+            🔒 הדייר חתם על הסכם - הכרטיס נעול לעריכה
+        </div>
+
+        <div id="missingDocsContainer" class="missing-docs-panel" style="display:none;">
+            <h4 style="margin:0 0 10px 0; color:#991b1b;">⚠️ עורך הדין סימן מסמכים חסרים</h4>
+            <div id="missingDocsList"></div>
+        </div>
+
+        <form id="editForm">
+            <input type="hidden" id="editId">
+
+            <div id="warningDisplay" class="warning-display" style="display:none;"></div>
+
+            <div class="owners-section">
+                <div class="section-title">בעלי הדירה</div>
+                <div id="ownersListDisplay" class="owners-list"></div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>טלפון ראשי</label>
+                        <input type="tel" id="editPhone">
+                    </div>
+                    <div class="form-group">
+                        <label>ת"ז דייר ראשי</label>
+                        <input type="text" id="editIdNum">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>סטטוס נציגות</label>
+                    <select id="editRepresentationStatus">
+                        <option value="טרם חתם">טרם חתם</option>
+                        <option value="חתם">חתם</option>
+                        <option value="חתם חלקי">חתם חלקי</option>
+                        <option value="סרבן">סרבן</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>סטטוס שוטף</label>
+                    <select id="editStatus">
+                        <option value="ללא מענה">ללא מענה</option>
+                        <option value="בטיפול">בטיפול</option>
+                        <option value="נקבעה פגישה">נקבעה פגישה</option>
+                        <option value="סרבן">סרבן</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="unsignedOwnersDiv" class="dynamic-field warning-bg">
+                <label>מי לא חתם?</label>
+                <input type="text" id="editUnsignedOwners" placeholder="רשום שמות...">
+            </div>
+
+            <div id="refusalReasonDiv" class="dynamic-field">
+                <label>סיבת סירוב</label>
+                <input type="text" id="editRefusalReason">
+            </div>
+
+            <div id="meetingDiv" class="dynamic-field info-bg">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>סוג פגישה</label>
+                        <select id="meetingType">
+                            <option value="user">נציג</option>
+                            <option value="manager">מנהל</option>
+                            <option value="lawyer">עו"ד</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>זמן הפגישה</label>
+                        <input type="datetime-local" id="editDate">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>הערות</label>
+                <textarea id="editNote" rows="2"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>כתובת בפועל</label>
+                <input type="text" id="editActualAddress">
+            </div>
+
+            <div class="form-row" style="align-items:start;">
+                <div class="form-group">
+                    <label>מושכר?</label>
+                    <select id="editIsRenter">
+                        <option value="לא">לא</option>
+                        <option value="כן">כן</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="flex:2;">
+                    <div id="tenantDetailsDiv" class="tenant-section" style="margin-top:0; display:none;">
+                        <label style="color:#166534; font-size:0.85rem; margin-bottom:8px; display:block;">פרטי שוכר</label>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="editTenantName" placeholder="שם השוכר">
+                            <input type="tel" id="editTenantPhone" placeholder="טלפון">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="submit" id="saveBtn">שמור שינויים</button>
+                <button type="button" onclick="document.getElementById('editModal').style.display='none'" class="btn-cancel">סגור</button>
+            </div>
+        </form>
+
+        <hr style="border:0; border-top:1px solid #e2e8f0; margin:25px 0;">
+
+        <div>
+            <h4 style="margin:0 0 10px 0;">💬 תיעוד התקשרות (צ'אט בוט)</h4>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="calendarModal" class="modal-overlay">
+    <div class="modal-box" style="height: 85vh; max-width: 900px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0;">📅 יומן משימות</h3>
+            <button onclick="document.getElementById('calendarModal').style.display='none'" class="btn-icon">✕</button>
+        </div>
+        <div id="calendarContainer" style="height:calc(100% - 40px); overflow:hidden;"></div>
+    </div>
+</div>
+
+<button class="floating-chat-btn" onclick="toggleStaffChat()">💬</button>
+
+<div id="staffChatWindow" class="floating-chat-window">
+    <div class="chat-header">
+        <span style="font-weight:bold;">צ'אט צוות</span>
+        <button onclick="toggleStaffChat()" style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;">✕</button>
+    </div>
+    <div id="staffChatBody" class="chat-body">
+    </div>
+    <div class="chat-footer">
+        <select id="staffChatRecipient">
+            <option value="all">📢 לכולם</option>
+        </select>
+        <input type="text" id="staffChatMsg" placeholder="הודעה...">
+        <div style="display:flex; gap:5px;">
+            <input type="file" id="staffChatFile" style="width:70%; font-size:0.8rem;">
+            <button onclick="sendStaffMessage()" style="flex:1; padding:5px; font-size:0.9rem;">שלח</button>
+        </div>
+    </div>
+</div>
+
+<div class="footer-credit">
+    <span>CRM זה נבנה ע"י נתי וינטר</span>
+    <span class="separator">|</span>
+    <strong class="company-name">LIONGROUP LTD</strong>
+</div>
+
+<script src="../JS/user.js"></script>
+</body>
+</html>

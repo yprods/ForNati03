@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>כניסה למערכת | LionGroup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="login-page-body"> <div class="login-split-container">
+    <div class="login-brand-side">
+        <div class="brand-content">
+            <h1 class="brand-headline">ניהול נכסים ודיירים <br>ברמה אחרת.</h1>
+            <p class="brand-subtext">מערכת ה-CRM המתקדמת לניהול חוזים, קשרי דיירים ותפעול שוטף.</p>
+        </div>
+        <div class="brand-footer">
+            &copy; 2023 LionGroup LTD. כל הזכויות שמורות.
+        </div>
+    </div>
+
+    <div class="login-form-side">
+        <div class="login-box-enhanced">
+            <h2 style="margin-bottom: 10px; font-size: 2rem;">ברוכים הבאים</h2>
+            <p style="color:var(--text-muted); margin-bottom: 40px; font-size: 1.1rem;">אנא הזן את פרטיך לכניסה למערכת</p>
+
+            <form id="loginForm">
+                <div class="form-group floating-label">
+                    <input type="text" id="username" required placeholder=" ">
+                    <label for="username">שם משתמש</label>
+                </div>
+                <div class="form-group floating-label" style="margin-bottom: 30px;">
+                    <input type="password" id="password" required placeholder=" ">
+                    <label for="password">סיסמה</label>
+                </div>
+
+                <button type="submit" style="width:100%; padding: 16px; font-size: 1.1rem;">התחבר למערכת</button>
+            </form>
+
+            <div class="login-links">
+                <button onclick="document.getElementById('registerModal').style.display='flex'">יצירת חשבון חדש</button>
+                <span class="separator">•</span>
+                <button onclick="document.getElementById('forgotModal').style.display='flex'">שכחתי סיסמה</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="registerModal" class="modal-overlay">
+    <div class="modal-box">
+        <div style="text-align:center; margin-bottom:20px;">
+            <h3 style="margin:0;">הרשמה למערכת</h3>
+            <small style="color:var(--text-muted);">מלא את הפרטים ליצירת משתמש חדש</small>
+        </div>
+        <form id="registerForm">
+            <div class="form-group"><label>שם משתמש</label><input type="text" id="regUser" required></div>
+            <div class="form-group"><label>סיסמה</label><input type="password" id="regPass" required></div>
+            <div class="form-group"><label>טלפון נייד</label><input type="text" id="regPhone" required></div>
+            <div class="form-group"><label>אימייל</label><input type="email" id="regEmail" required></div>
+            <div style="display:flex; gap:15px; margin-top:25px;">
+                <button type="submit" style="flex:1;">הירשם</button>
+                <button type="button" onclick="document.getElementById('registerModal').style.display='none'" class="btn-edit" style="flex:1;">ביטול</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="forgotModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 style="margin-bottom:10px;">שחזור סיסמה</h3>
+        <p style="color:var(--text-muted); margin-bottom:20px;">הכנס את המייל או הטלפון שלך לקבלת סיסמה זמנית.</p>
+        <form id="forgotForm">
+            <div class="form-group"><input type="text" id="forgotIdentifier" placeholder="מייל או טלפון" required></div>
+            <div style="display:flex; gap:15px; margin-top:20px;">
+                <button type="submit" style="flex:1;">שלח סיסמה</button>
+                <button type="button" onclick="document.getElementById('forgotModal').style.display='none'" class="btn-edit" style="flex:1;">ביטול</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="changePasswordModal" class="modal-overlay">
+    <div class="modal-box" style="border-top-color:var(--warning);">
+        <h3 style="color:var(--warning); margin-bottom:10px;">🔒 נדרשת החלפת סיסמה</h3>
+        <p style="margin-bottom:20px;">התחברת עם סיסמה זמנית. אנא בחר סיסמה חדשה.</p>
+        <form id="changePasswordForm">
+            <input type="hidden" id="changePassUserId">
+            <div class="form-group"><label>סיסמה חדשה</label><input type="password" id="newPermanentPass" required></div>
+            <button type="submit" style="width:100%; margin-top:10px;">שמור והמשך</button>
+        </form>
+    </div>
+</div>
+
+<script src="../JS/index.js"></script>
+</body>
+</html>

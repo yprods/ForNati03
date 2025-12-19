@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת עורך דין | LionGroup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <h2>ממשק עורך דין</h2>
+        <small style="color:var(--text-muted);">ניהול תיקים וחתימות</small>
+    </div>
+    <div style="display:flex; gap:10px;">
+        <button onclick="openLawyerCalendar()" style="background:var(--warning); color:black;">📅 יומן וחסימות</button>
+        <button onclick="location.href='/html/index.html'" class="btn-logout">יציאה</button>
+    </div>
+</div>
+
+<div id="navBar" class="nav-bar" style="display:none; padding: 10px 20px;">
+    <button id="backBtn" class="btn-back">➜ חזור</button>
+    <h3 id="navTitle" style="margin:0; margin-right:15px;"></h3>
+</div>
+
+<div id="mainContainer" class="dashboard-grid" style="padding: 20px;">
+    <div style="text-align:center; width:100%;">טוען נתונים...</div>
+</div>
+
+<div id="updateModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3>עדכון סטטוס חתימה</h3>
+        <form id="updateForm">
+            <input type="hidden" id="editId">
+            <div class="form-group">
+                <label>סטטוס משפטי</label>
+                <select id="editStatus">
+                    <option value="טרם טופל">טרם טופל</option>
+                    <option value="בתהליך חתימה">בתהליך חתימה</option>
+                    <option value="חתם חלקי">חתם חלקי (חסרים מסמכים)</option>
+                    <option value="חתם מלא">חתם מלא (סיום טיפול)</option>
+                </select>
+            </div>
+
+            <div id="partialSection" style="display:none; margin-bottom:20px;">
+                <h4>מה חסר?</h4>
+                <div id="ownersCheckboxes" class="checkbox-group"></div>
+                <div class="checkbox-group" style="margin-top:10px;">
+                    <div class="checkbox-item"><input type="checkbox" name="missing_doc" value="צילום ת.ז"><label>צילום ת.ז</label></div>
+                    <div class="checkbox-item"><input type="checkbox" name="missing_doc" value="נסח טאבו"><label>נסח טאבו</label></div>
+                    <div class="checkbox-item"><input type="checkbox" name="missing_doc" value="ייפוי כוח"><label>ייפוי כוח</label></div>
+                    <div class="checkbox-item"><input type="checkbox" name="missing_doc" value="אישור עקרוני"><label>אישור עקרוני</label></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>העלאת מסמכים חתומים</label>
+                <input type="file" id="signedDocs" multiple>
+            </div>
+            <div class="modal-actions">
+                <button type="submit">שמור ועדכן</button>
+                <button type="button" onclick="document.getElementById('updateModal').style.display='none'" class="btn-cancel">ביטול</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="calendarModal" class="modal-overlay">
+    <div class="modal-box" style="height: 90vh; max-width: 1000px; display:flex; flex-direction:column;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+            <h3>📅 יומן פגישות</h3>
+            <div style="display:flex; gap:10px;">
+                <button onclick="document.getElementById('blockTimeModal').style.display='flex'" style="background:#ef4444;">⛔ חסום תאריך</button>
+                <button onclick="document.getElementById('calendarModal').style.display='none'" class="btn-icon">✕</button>
+            </div>
+        </div>
+        <div id="calendarContainer" style="flex:1;"></div>
+    </div>
+</div>
+
+<div id="blockTimeModal" class="modal-overlay" style="z-index: 2100;">
+    <div class="modal-box" style="max-width: 400px;">
+        <h3 style="color:#ef4444;">⛔ חסימת זמן ביומן</h3>
+        <form id="blockTimeForm">
+            <div class="form-group"><label>תאריך ושעה</label><input type="datetime-local" id="blockDate" required></div>
+            <div class="form-group"><label>סיבה</label><input type="text" id="blockReason" required></div>
+            <button type="submit" style="background:#ef4444; width:100%;">בצע חסימה</button>
+            <button type="button" onclick="document.getElementById('blockTimeModal').style.display='none'" class="btn-cancel" style="width:100%; margin-top:10px;">ביטול</button>
+        </form>
+    </div>
+</div>
+
+<button class="floating-chat-btn" onclick="toggleLawyerChat()">💬</button>
+
+<div id="lawyerChatWindow" class="floating-chat-window">
+    <div class="chat-header">
+        <span style="font-weight:bold;">הודעות והתכתבויות</span>
+        <button onclick="toggleLawyerChat()" style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;">✕</button>
+    </div>
+    <div id="lawyerChatBody" class="chat-body">
+    </div>
+    <div class="chat-footer">
+        <select id="chatRecipient">
+            <option value="all">📢 שלח לכולם (נציגים)</option>
+        </select>
+        <input type="text" id="chatMsg" placeholder="כתוב הודעה...">
+        <div style="display:flex; gap:5px;">
+            <input type="file" id="chatFile" style="width:70%; font-size:0.8rem;">
+            <button onclick="sendLawyerMessage()" style="flex:1; padding:5px;">שלח</button>
+        </div>
+    </div>
+</div>
+
+<div class="footer-credit">
+    <span>CRM זה נבנה ע"י נתי וינטר</span>
+    <span class="separator">|</span>
+    <strong class="company-name">LIONGROUP LTD</strong>
+</div>
+
+<script src="../JS/lawyer.js"></script>
+</body>
+</html>
